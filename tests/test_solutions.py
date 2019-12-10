@@ -5,6 +5,7 @@ import json
 from solution_object_model import run_obj_solution, MapLoader
 from solution_functional import run_functional_solution, load_map
 from exceptions import LoopException, InputException
+from tests import filename
 
 
 # mock for stdin input
@@ -15,7 +16,7 @@ def mocked_input(strings_gen):
 
 
 def load_mocked_data(sol_idx):
-    with open('fixtures.json') as f:
+    with open(filename, 'r') as f:
         fixture_data = json.load(f)[sol_idx]
         input_data = fixture_data['input']
         strings_gen = (s for s in input_data)
@@ -42,10 +43,9 @@ class TestObjectModel:
     )
     def test_map_with_loop(self, solution_method):
         with pytest.raises(LoopException):
-            with open('fixtures.json') as f:
-                strings_gen, output_data = load_mocked_data(2)
-                with mock.patch('builtins.input', mocked_input(strings_gen)):
-                    result = solution_method()
+            strings_gen, output_data = load_mocked_data(2)
+            with mock.patch('builtins.input', mocked_input(strings_gen)):
+                result = solution_method()
 
     # case when map has wrong entity of numbers or incorrect values
     @pytest.mark.parametrize(
@@ -54,7 +54,6 @@ class TestObjectModel:
     @pytest.mark.parametrize('fixture_idx', [3, 4])
     def test_wrong_input(self, load_method, fixture_idx):
         with pytest.raises(InputException):
-            with open('fixtures.json') as f:
-                strings_gen, output_data = load_mocked_data(fixture_idx)
-                with mock.patch('builtins.input', mocked_input(strings_gen)):
-                    treasure_map = load_method()
+            strings_gen, output_data = load_mocked_data(fixture_idx)
+            with mock.patch('builtins.input', mocked_input(strings_gen)):
+                treasure_map = load_method()
